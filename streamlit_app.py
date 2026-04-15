@@ -120,9 +120,11 @@ with tab1:
         st.markdown("#### 🏪 Sucursal Perisur")
         inv_p = {}
         for prod in st.session_state.productos:
-            inv_p[prod] = st.number_input(
-                prod, min_value=0, value=st.session_state.inv_perisur.get(prod, 0),
-                key=f"perisur_{prod}", step=1
+            inv_p[prod] = st.selectbox(
+                prod,
+                options=list(range(9)),
+                index=st.session_state.inv_perisur.get(prod, 0),
+                key=f"perisur_{prod}"
             )
         if st.button("💾 Guardar Perisur", use_container_width=True):
             st.session_state.inv_perisur = inv_p
@@ -134,9 +136,11 @@ with tab1:
         st.markdown("#### 🏪 Sucursal Primavera")
         inv_v = {}
         for prod in st.session_state.productos:
-            inv_v[prod] = st.number_input(
-                prod, min_value=0, value=st.session_state.inv_primavera.get(prod, 0),
-                key=f"primavera_{prod}", step=1
+            inv_v[prod] = st.selectbox(
+                prod,
+                options=list(range(9)),
+                index=st.session_state.inv_primavera.get(prod, 0),
+                key=f"primavera_{prod}"
             )
         if st.button("💾 Guardar Primavera", use_container_width=True):
             st.session_state.inv_primavera = inv_v
