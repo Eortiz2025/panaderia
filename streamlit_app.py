@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import date
 import io
+from twilio.rest import Client
 
 st.set_page_config(page_title="🥖 Panadería", layout="wide")
 
@@ -244,6 +245,31 @@ with tab2:
             # Tabla completa
             st.markdown("#### Detalle completo")
             st.dataframe(df_orden, use_container_width=True, hide_index=True)
+
+            # ─── ENVIAR SMS ───────────────────────────────────────────────
+            try:
+                account_sid = st.secrets["TWILIO_ACCOUNT_ID"]
+                auth_token  = st.secrets["TWILIO_AUTH_TOKEN"]
+                from_number = st.secrets["TWILIO_FROM"]
+                to_number   = st.secrets["TWILIO_TO"]
+
+                # Armar mensaje
+                hoy = date.today().strftime("%d/%m/%Y")
+                lineas = [f"🥖 Orden Panadería {hoy}"]
+                for _, row in df_orden.iterrows():
+                    if row["🔥 A hornear"] > 0:
+                        lineas.append(f"{row['Producto']}: {int(row['🔥 A hornear'])}")
+                total = int(df_orden["🔥 A hornear"].sum())
+                lineas.append(f"─────────────")
+                lineas.append(f"TOTAL: {total} piezas")
+                mensaje = "\n".join(lineas)
+
+                client = Client(account_sid, auth_token)
+                client.messages.create(body=mensaje, from_=from_number, to=to_number)
+                st.success("📱 SMS enviado correctamente")
+
+            except Exception as e:
+                st.error(f"❌ Error al enviar SMS: {e}")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # TAB 3 — PRODUCTOS Y ÓPTIMOS
