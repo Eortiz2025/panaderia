@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import date
 import io
 
-st.set_page_config(page_title="🥖 Panadería - Control de Producción", layout="wide")
+st.set_page_config(page_title="🥖 Panadería", layout="wide")
 
 # ─── ESTILOS ────────────────────────────────────────────────────────────────
 st.markdown("""
@@ -69,10 +69,10 @@ h1, h2, h3 {
 PRODUCTOS_DEFAULT = {
     "Banofee":                          15,
     "Galleta Canela":                   15,
-    "Galleta Chispas de Choco":         15,
+    "Galleta Chispas Masa Madre":       15,
     "Galleta Choco Nuez":               15,
-    "Galleta Masa Madre":               15,
     "Galleta Matcha":                   15,
+    "Galleta Ola":                      15,
     "Galleta Pistache":                 15,
     "Muffin":                           15,
     "Tarta Vasca Dulce":                15,
@@ -111,7 +111,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # ══════════════════════════════════════════════════════════════════════════════
 with tab1:
     st.markdown("### Captura el inventario al cierre de cada sucursal")
-    st.info("Anota cuántas piezas quedan en cada sucursal al final del día.")
+    st.info("Anota cuántas piezas quedan en cada sucursal.")
 
     col_perisur, col_primavera = st.columns(2, gap="large")
 
@@ -232,7 +232,7 @@ with tab2:
 # TAB 3 — PRODUCTOS Y ÓPTIMOS
 # ══════════════════════════════════════════════════════════════════════════════
 with tab3:
-    st.markdown("### ⚙️ Gestiona los productos y sus cantidades óptimas")
+    st.markdown("### ⚙️ Productos y Óptimos")
     st.info("El **óptimo** es la cantidad ideal que debe haber en total entre las dos sucursales cada mañana.")
 
     # Editar óptimos
