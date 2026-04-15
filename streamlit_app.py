@@ -85,9 +85,9 @@ PRODUCTOS_DEFAULT = {
 if "productos" not in st.session_state:
     st.session_state.productos = PRODUCTOS_DEFAULT.copy()
 if "inv_perisur" not in st.session_state:
-    st.session_state.inv_perisur = {p: 0 for p in st.session_state.productos}
+    st.session_state.inv_perisur = {p: None for p in st.session_state.productos}
 if "inv_primavera" not in st.session_state:
-    st.session_state.inv_primavera = {p: 0 for p in st.session_state.productos}
+    st.session_state.inv_primavera = {p: None for p in st.session_state.productos}
 if "perisur_guardado" not in st.session_state:
     st.session_state.perisur_guardado = False
 if "primavera_guardado" not in st.session_state:
