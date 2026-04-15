@@ -130,11 +130,9 @@ st.markdown(f"**{date.today().strftime('%A %d de %B, %Y')}**")
 st.divider()
 
 # ─── PESTAÑAS ────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2 = st.tabs([
     "🌙 Inventario Nocturno",
-    "☀️ Orden de Horneado",
     "⚙️ Productos y Óptimos",
-    "📥 Exportar"
 ])
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -215,102 +213,11 @@ with tab1:
         df_res["A hornear"] = (df_res["Óptimo"] - df_res["Total inventario"]).clip(lower=0)
         st.dataframe(df_res, use_container_width=True, hide_index=True)
 
+
 # ══════════════════════════════════════════════════════════════════════════════
-# TAB 2 — ORDEN DE HORNEADO
+# TAB 2 — PRODUCTOS Y ÓPTIMOS
 # ══════════════════════════════════════════════════════════════════════════════
 with tab2:
-    st.markdown("### ☀️ Orden de producción para hoy")
-
-    ambos_listos = st.session_state.perisur_guardado and st.session_state.primavera_guardado
-    solo_uno = st.session_state.perisur_guardado or st.session_state.primavera_guardado
-
-    if not solo_uno:
-        st.warning("⚠️ Aún no hay inventarios guardados. Ve a la pestaña **Inventario Nocturno** primero.")
-    else:
-        if not ambos_listos:
-            faltante = "Primavera" if st.session_state.perisur_guardado else "Perisur"
-            st.warning(f"⚠️ Solo está guardado un inventario. Falta **{faltante}**. Se calculará con lo disponible.")
-
-        if st.button("🔥 Generar Orden de Horneado", use_container_width=True):
-
-            orden = []
-            for prod, optimo in st.session_state.productos.items():
-                p = st.session_state.inv_perisur.get(prod, 0)
-                v = st.session_state.inv_primavera.get(prod, 0)
-                total_inv = p + v
-                a_hornear = max(0, optimo - total_inv)
-                orden.append({
-                    "Producto": prod,
-                    "Óptimo": optimo,
-                    "Perisur": p,
-                    "Primavera": v,
-                    "Total inventario": total_inv,
-                    "🔥 A hornear": a_hornear,
-                })
-
-            df_orden = pd.DataFrame(orden)
-            df_sin_cero = df_orden[df_orden["🔥 A hornear"] > 0]
-
-            # Mostrar orden visual
-            st.markdown('<div class="orden-box">', unsafe_allow_html=True)
-            st.markdown(f'<div class="orden-titulo">🧾 Orden de Horneado — {date.today().strftime("%d/%m/%Y")}</div>', unsafe_allow_html=True)
-
-            if df_sin_cero.empty:
-                st.success("🎉 ¡Inventario suficiente! No se necesita hornear nada hoy.")
-            else:
-                total_piezas = df_sin_cero["🔥 A hornear"].sum()
-                for _, row in df_sin_cero.iterrows():
-                    st.markdown(
-                        f'<div class="orden-fila">'
-                        f'<span>{row["Producto"]}</span>'
-                        f'<span><b>{int(row["🔥 A hornear"])} piezas</b></span>'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-                st.markdown(
-                    f'<div class="orden-fila" style="margin-top:0.8rem;font-weight:bold;font-size:1.1rem;">'
-                    f'<span>TOTAL</span><span>{int(total_piezas)} piezas</span></div>',
-                    unsafe_allow_html=True
-                )
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            # Guardar para exportar
-            st.session_state.df_orden = df_orden
-
-            # Tabla completa
-            st.markdown("#### Detalle completo")
-            st.dataframe(df_orden, use_container_width=True, hide_index=True)
-
-            # ─── ENVIAR SMS ───────────────────────────────────────────────
-            try:
-                account_sid = st.secrets["TWILIO_ACCOUNT_ID"]
-                auth_token  = st.secrets["TWILIO_AUTH_TOKEN"]
-                from_number = st.secrets["TWILIO_FROM"]
-                to_number   = st.secrets["TWILIO_TO"]
-
-                # Armar mensaje
-                hoy = date.today().strftime("%d/%m/%Y")
-                lineas = [f"🥖 Orden Panadería {hoy}"]
-                for _, row in df_orden.iterrows():
-                    if row["🔥 A hornear"] > 0:
-                        lineas.append(f"{row['Producto']}: {int(row['🔥 A hornear'])}")
-                total = int(df_orden["🔥 A hornear"].sum())
-                lineas.append(f"─────────────")
-                lineas.append(f"TOTAL: {total} piezas")
-                mensaje = "\n".join(lineas)
-
-                client = Client(account_sid, auth_token)
-                client.messages.create(body=mensaje, from_=from_number, to=to_number)
-                st.success("📱 SMS enviado correctamente")
-
-            except Exception as e:
-                st.error(f"❌ Error al enviar SMS: {e}")
-
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 3 — PRODUCTOS Y ÓPTIMOS
-# ══════════════════════════════════════════════════════════════════════════════
-with tab3:
     st.markdown("### ⚙️ Productos y Óptimos")
     st.info("El **óptimo** es la cantidad ideal que debe haber en total entre las dos sucursales cada mañana.")
 
@@ -366,39 +273,3 @@ with tab3:
         st.session_state.inv_primavera.pop(prod_eliminar, None)
         st.success(f"🗑️ '{prod_eliminar}' eliminado")
         st.rerun()
-
-# ══════════════════════════════════════════════════════════════════════════════
-# TAB 4 — EXPORTAR
-# ══════════════════════════════════════════════════════════════════════════════
-with tab4:
-    st.markdown("### 📥 Exportar reporte del día")
-
-    if "df_orden" not in st.session_state:
-        st.warning("⚠️ Primero genera la orden de horneado en la pestaña ☀️.")
-    else:
-        df_orden = st.session_state.df_orden
-        fecha_hoy = date.today().strftime("%Y-%m-%d")
-
-        buffer = io.BytesIO()
-        with pd.ExcelWriter(buffer, engine="openpyxl") as writer:
-            df_orden.to_excel(writer, sheet_name="Orden_Horneado", index=False)
-
-            # Hoja de inventarios
-            df_inv = pd.DataFrame({
-                "Producto": list(st.session_state.productos.keys()),
-                "Inventario Perisur": [st.session_state.inv_perisur.get(p, 0) for p in st.session_state.productos],
-                "Inventario Primavera": [st.session_state.inv_primavera.get(p, 0) for p in st.session_state.productos],
-            })
-            df_inv.to_excel(writer, sheet_name="Inventarios", index=False)
-
-        buffer.seek(0)
-        st.download_button(
-            label="⬇️ Descargar Excel del día",
-            data=buffer,
-            file_name=f"panaderia_orden_{fecha_hoy}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-
-        st.markdown("#### Vista previa de la orden")
-        st.dataframe(df_orden, use_container_width=True, hide_index=True)
