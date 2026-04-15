@@ -93,6 +93,36 @@ if "perisur_guardado" not in st.session_state:
     st.session_state.perisur_guardado = False
 if "primavera_guardado" not in st.session_state:
     st.session_state.primavera_guardado = False
+if "sms_enviado" not in st.session_state:
+    st.session_state.sms_enviado = False
+
+# ─── FUNCIÓN ENVIAR SMS ──────────────────────────────────────────────────────
+def enviar_sms_orden():
+    try:
+        account_sid = st.secrets["TWILIO_ACCOUNT_ID"]
+        auth_token  = st.secrets["TWILIO_AUTH_TOKEN"]
+        from_number = st.secrets["TWILIO_FROM"]
+        to_number   = st.secrets["TWILIO_TO"]
+
+        hoy = date.today().strftime("%d/%m/%Y")
+        lineas = [f"Orden Panaderia {hoy}"]
+        total = 0
+        for prod, optimo in st.session_state.productos.items():
+            p = st.session_state.inv_perisur.get(prod, 0) or 0
+            v = st.session_state.inv_primavera.get(prod, 0) or 0
+            a_hornear = max(0, optimo - p - v)
+            if a_hornear > 0:
+                lineas.append(f"{prod}: {a_hornear}")
+                total += a_hornear
+        lineas.append(f"-------------")
+        lineas.append(f"TOTAL: {total} piezas")
+        mensaje = "\n".join(lineas)
+
+        client = Client(account_sid, auth_token)
+        client.messages.create(body=mensaje, from_=from_number, to=to_number)
+        st.session_state.sms_enviado = True
+    except Exception as e:
+        st.error(f"❌ Error al enviar SMS: {e}")
 
 # ─── HEADER ──────────────────────────────────────────────────────────────────
 st.markdown("# 🥖 Panadería — Control de Producción")
@@ -140,6 +170,9 @@ with tab1:
                 st.session_state.inv_perisur = inv_p
                 st.session_state.perisur_guardado = True
                 st.success("✅ Inventario Perisur guardado")
+                if st.session_state.primavera_guardado and not st.session_state.sms_enviado:
+                    enviar_sms_orden()
+                    st.success("📱 SMS enviado automáticamente")
 
     # — PRIMAVERA —
     with col_primavera:
@@ -164,6 +197,9 @@ with tab1:
                 st.session_state.inv_primavera = inv_v
                 st.session_state.primavera_guardado = True
                 st.success("✅ Inventario Primavera guardado")
+                if st.session_state.perisur_guardado and not st.session_state.sms_enviado:
+                    enviar_sms_orden()
+                    st.success("📱 SMS enviado automáticamente")
 
     st.divider()
     # — RESUMEN RÁPIDO —
