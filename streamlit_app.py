@@ -105,14 +105,14 @@ def enviar_sms_orden():
         to_number   = st.secrets["TWILIO_TO"]
 
         hoy = date.today().strftime("%d/%m/%Y")
-        lineas = [f"Orden Panaderia {hoy}"]
+        lineas = [f"Orden Panaderia {hoy}", ""]
         total = 0
         for prod, optimo in st.session_state.productos.items():
             p = st.session_state.inv_perisur.get(prod, 0) or 0
             v = st.session_state.inv_primavera.get(prod, 0) or 0
             a_hornear = max(0, optimo - p - v)
             if a_hornear > 0:
-                lineas.append(f"{prod}: {a_hornear}")
+                lineas.append(f"{a_hornear} - {prod}")
                 total += a_hornear
         lineas.append(f"-------------")
         lineas.append(f"TOTAL: {total} piezas")
