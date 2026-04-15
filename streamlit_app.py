@@ -68,18 +68,18 @@ h1, h2, h3 {
 
 # ─── PRODUCTOS Y ÓPTIMOS ─────────────────────────────────────────────────────
 PRODUCTOS_DEFAULT = {
-    "Banofee":                          15,
-    "Galleta Canela":                   15,
-    "Galleta Chispas Masa Madre":       15,
-    "Galleta Choco Nuez":               15,
-    "Galleta Matcha":                   15,
-    "Galleta Ola":                      15,
-    "Galleta Pistache":                 15,
-    "Muffin":                           15,
-    "Tarta Vasca Dulce":                15,
-    "Tarta Vasca Pistache":             15,
-    "Tarta Vasca Tradicional Chica":    15,
-    "Tarta Vasca Tradicional Grande":   15,
+    "Banofee":                          0,
+    "Galleta Canela":                   5,
+    "Galleta Chispas Masa Madre":       5,
+    "Galleta Choco Nuez":               5,
+    "Galleta Matcha":                   5,
+    "Galleta Ola":                      8,
+    "Galleta Pistache":                 5,
+    "Muffin":                           6,
+    "Tarta Vasca Dulce":                3,
+    "Tarta Vasca Pistache":             3,
+    "Tarta Vasca Tradicional Chica":    3,
+    "Tarta Vasca Tradicional Grande":   3,
 }
 
 # ─── ESTADO DE SESIÓN ────────────────────────────────────────────────────────
