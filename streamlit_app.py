@@ -228,7 +228,7 @@ with tab2:
     for i, (prod, opt) in enumerate(st.session_state.productos.items()):
         with cols[i % 3]:
             nuevos_optimos[prod] = st.number_input(
-                prod, min_value=1, value=opt, key=f"opt_{prod}", step=1
+                prod, min_value=0, value=opt, key=f"opt_{prod}", step=1
             )
 
     if st.button("💾 Guardar óptimos", use_container_width=True):
