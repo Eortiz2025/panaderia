@@ -67,18 +67,18 @@ h1, h2, h3 {
 
 # ─── PRODUCTOS Y ÓPTIMOS ─────────────────────────────────────────────────────
 PRODUCTOS_DEFAULT = {
-    "Bolillo":           60,
-    "Pan de dulce":      80,
-    "Cuernito":          50,
-    "Baguette":          30,
-    "Telera":            40,
-    "Concha":            70,
-    "Donut":             40,
-    "Empanada":          35,
-    "Medialuna":         45,
-    "Pan de caja":       20,
-    "Rebanada de pastel":25,
-    "Muffin":            30,
+    "Banofee":                          15,
+    "Galleta Canela":                   15,
+    "Galleta Chispas de Choco":         15,
+    "Galleta Choco Nuez":               15,
+    "Galleta Masa Madre":               15,
+    "Galleta Matcha":                   15,
+    "Galleta Pistache":                 15,
+    "Muffin":                           15,
+    "Tarta Vasca Dulce":                15,
+    "Tarta Vasca Pistache":             15,
+    "Tarta Vasca Tradicional Chica":    15,
+    "Tarta Vasca Tradicional Grande":   15,
 }
 
 # ─── ESTADO DE SESIÓN ────────────────────────────────────────────────────────
