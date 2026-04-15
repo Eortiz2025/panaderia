@@ -120,32 +120,49 @@ with tab1:
         st.markdown("#### 🏪 Sucursal Perisur")
         inv_p = {}
         for prod in st.session_state.productos:
-            inv_p[prod] = st.selectbox(
-                prod,
-                options=list(range(9)),
-                index=st.session_state.inv_perisur.get(prod, 0),
-                key=f"perisur_{prod}"
-            )
-        if st.button("💾 Guardar Perisur", use_container_width=True):
-            st.session_state.inv_perisur = inv_p
-            st.session_state.perisur_guardado = True
-            st.success("✅ Inventario Perisur guardado")
+            valor_guardado = st.session_state.inv_perisur.get(prod, None)
+            opciones = ["— elige —"] + list(range(9))
+            if valor_guardado is not None:
+                idx = valor_guardado + 1  # +1 por el "— elige —"
+            else:
+                idx = 0
+            sel = st.selectbox(prod, options=opciones, index=idx, key=f"perisur_{prod}")
+            inv_p[prod] = None if sel == "— elige —" else int(sel)
+
+        perisur_completo = all(v is not None for v in inv_p.values())
+        faltantes_p = [p for p, v in inv_p.items() if v is None]
+
+        if faltantes_p:
+            st.warning(f"⚠️ Faltan {len(faltantes_p)} productos por capturar")
+        else:
+            if st.button("💾 Guardar Perisur", use_container_width=True):
+                st.session_state.inv_perisur = inv_p
+                st.session_state.perisur_guardado = True
+                st.success("✅ Inventario Perisur guardado")
 
     # — PRIMAVERA —
     with col_primavera:
         st.markdown("#### 🏪 Sucursal Primavera")
         inv_v = {}
         for prod in st.session_state.productos:
-            inv_v[prod] = st.selectbox(
-                prod,
-                options=list(range(9)),
-                index=st.session_state.inv_primavera.get(prod, 0),
-                key=f"primavera_{prod}"
-            )
-        if st.button("💾 Guardar Primavera", use_container_width=True):
-            st.session_state.inv_primavera = inv_v
-            st.session_state.primavera_guardado = True
-            st.success("✅ Inventario Primavera guardado")
+            valor_guardado = st.session_state.inv_primavera.get(prod, None)
+            opciones = ["— elige —"] + list(range(9))
+            if valor_guardado is not None:
+                idx = valor_guardado + 1
+            else:
+                idx = 0
+            sel = st.selectbox(prod, options=opciones, index=idx, key=f"primavera_{prod}")
+            inv_v[prod] = None if sel == "— elige —" else int(sel)
+
+        faltantes_v = [p for p, v in inv_v.items() if v is None]
+
+        if faltantes_v:
+            st.warning(f"⚠️ Faltan {len(faltantes_v)} productos por capturar")
+        else:
+            if st.button("💾 Guardar Primavera", use_container_width=True):
+                st.session_state.inv_primavera = inv_v
+                st.session_state.primavera_guardado = True
+                st.success("✅ Inventario Primavera guardado")
 
     st.divider()
     # — RESUMEN RÁPIDO —
